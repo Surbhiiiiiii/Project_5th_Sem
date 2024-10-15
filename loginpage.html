@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        body, html {
+            height: 100%; /* Set height for body and html */
+            margin: 0; /* Remove default margin */
+        }
+        .container {
+            display: flex; /* Use flexbox for layout */
+            height: 100%; /* Set height for the container */
+        }
+        .box1 {
+            flex: 40%; /* Use flex to set the width */
+            background-image: url(https://images.unsplash.com/photo-1728585255223-c158ab095e1f?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzfHx8fHx8);
+            background-repeat: no-repeat;
+            background-size: cover;
+            display: flex; /* Center text inside */
+            justify-content: center; /* Center horizontally */
+            align-items: center; /* Center vertically */
+            color: white; /* Change text color for visibility */
+        }
+        .box2 {
+            flex: 60%; /* Use flex to set the width */
+            background-color: antiquewhite;
+            border: 1px solid red; /* Correct border syntax */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column; /* Stack elements vertically */
+            padding: 20px; /* Add padding for better spacing */
+        }
+        form {
+            display: flex; /* Use flex for form layout */
+            flex-direction: column; /* Stack inputs vertically */
+            width: 60%; /* Make the form take the full width */
+        }
+        label {
+            margin: 10px 0 5px; /* Add margin to labels for spacing */
+        }
+        input {
+            padding: 10px; /* Add padding to inputs */
+            margin-bottom: 15px; /* Add margin below inputs */
+            border: 1px solid #ccc; /* Add border to inputs */
+            border-radius: 4px; /* Round input corners */
+        }
+        p {
+            margin: 0; /* Remove default margin */
+        }
+        button:hover{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="box1">
+            Hello
+        </div>
+        <div class="box2">
+            <p style="font-size: 30px;">Welcome To ResumeBuilder System</p>
+            <br>
+            <br>
+            <form action="">
+                <label for="name">Name</label>
+                <input type="text" id="name" required>
+                
+                <label for="email">Email Address</label>
+                <input type="email" id="email" required>
+                
+                <label for="phone">Phone No.</label>
+                <input type="number" id="phone" required>
+                
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+                
+                <label for="confirm-password">Confirm Password</label>
+                <input type="password" id="confirm-password" required>
+            </form>
+            <button style="height: 50px; font-size: 15px; width: 90px;">Login</button>
+
+        </div>
+    </div>
+</body>
+</html>
