@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Game</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #333;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 30px;
+            color: #2c3e50;
+        }
+
+        /* Dropdown and Start Button */
+        #category-select {
+            padding: 15px 25px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #ffffff;
+            color: #333;
+            margin-bottom: 20px;
+            display: inline-block;
+            width: 250px;
+        }
+
+        #category-select:hover {
+            border-color: #007bff;
+        }
+
+        #start-btn {
+            padding: 15px 35px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            display: inline-block;
+        }
+
+        #start-btn:hover {
+            background-color: #0056b3;
+        }
+
+        /* Question Container */
+        #question-container {
+            display: none;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+            margin-top: 20px;
+            position: relative;
+            margin: auto;
+        }
+
+        #question-text {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #34495e;
+        }
+
+        .option-button {
+            display: block;
+            padding: 15px;
+            font-size: 18px;
+            background-color: #ecf0f1;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            margin: 10px auto;
+            width: 80%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #333;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .option-button:hover {
+            background-color: #d5d8dc;
+        }
+
+        .correct {
+            background-color: #2ecc71 !important;
+            color: white !important;
+        }
+
+        .wrong {
+            background-color: #e74c3c !important;
+            color: white !important;
+        }
+
+        /* Timer */
+        #timer {
+            font-size: 1.5em;
+            color: #e74c3c;
+            margin-top: 20px;
+        }
+
+        /* Score Container */
+        #score-container {
+            display: none;
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+
+        #restart-btn {
+            background-color: #f39c12;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #restart-btn:hover {
+            background-color: #e67e22;
+        }
+        #ResumeBuilderPage {
+            background-color: #12b3f3;
+            padding: 15px 30px;
+            font-size: 18px;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #ResumeBuilderPage:hover {
+            background-color: #02a0df;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <h1>Quiz Game</h1>
+
+        <!-- Dropdown for category selection -->
+        <select id="category-select">
+            <option value="SQL">SQL</option>
+            <option value="Code">Programming</option>
+            <option value="React">React</option>
+            <option value="Postgres">Postgres</option>
+            <option value="Django">Django</option>
+            <option value="NodeJs">NodeJs</option>
+            <option value="Next.js">Next.js</option>
+            <option value="VueJS">VueJS</option>
+            <option value="WordPress">WordPress</option>
+            <option value="Linux">Linux</option>
+            <option value="bash">bash</option>
+            <option value="Docker">Docker</option>
+            <option value="DevOps">DevOps</option>
+        </select>
+
+        <!-- Start Quiz Button -->
+         <br>
+        <button id="start-btn">Start Quiz</button>
+
+        <!-- Timer Display -->
+        <div id="timer" style="display: none;">30</div> <!-- Initially hidden -->
+
+        <!-- Question and Options -->
+        <div id="question-container">
+            <h2 id="question-text"></h2>
+            <div id="options-container"></div>
+        </div>
+
+        <!-- Score Display -->
+        <div id="score-container">
+            <h2>Your Score: <span id="score"></span></h2>
+            <button id="restart-btn">Restart Quiz</button>
+            <br>
+            <br>
+            <button id="ResumeBuilderPage">Go to Resume Maker</button>
+        </div>
+    </div>
+
+
+<script type="module">
+    // Import Firebase SDK components
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
+
+// Your Firebase configuration
+const firebaseConfig = {
+    apiKey: "AIzaSyBhd2TdGnJspmv62dr6DOQMsyu_HOlwhZ8",
+    authDomain: "resume-builder-c55d3.firebaseapp.com",
+    projectId: "resume-builder-c55d3",
+    storageBucket: "resume-builder-c55d3.appspot.com",
+    messagingSenderId: "329272789238",
+    appId: "1:329272789238:web:6d2f3044ff45211ff4c4d7"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Global Variables
+const apiToken = "kr74dIaJZI6p9ysIahEfFSFPGmjneHDBT7wDAXZj";
+const questionContainer = document.getElementById('question-container');
+const scoreContainer = document.getElementById('score-container');
+const questionText = document.getElementById('question-text');
+const optionsContainer = document.getElementById('options-container');
+const startButton = document.getElementById('start-btn');
+const scoreElement = document.getElementById('score');
+const timerDisplay = document.getElementById('timer');
+const restartButton = document.getElementById('restart-btn');
+const categorySelect = document.getElementById('category-select');
+
+let questions = [];
+let currentQuestionIndex = 0;
+let score = 0;
+let timer;
+let timeLeft = 30;
+
+// Start the quiz
+startButton.addEventListener('click', () => {
+    startButton.style.display = 'none';
+    categorySelect.style.display = 'none'; // Hide the dropdown
+    timerDisplay.style.display = 'block'; // Show the timer
+    fetchQuestions();
+});
+
+// Restart the quiz
+restartButton.addEventListener('click', () => {
+    scoreContainer.style.display = 'none';
+    startButton.style.display = 'inline-block';
+    categorySelect.style.display = 'inline-block'; // Show the dropdown again
+    timerDisplay.style.display = 'none'; // Hide the timer during score display
+    currentQuestionIndex = 0;
+    score = 0;
+    timeLeft = 30;
+    timerDisplay.textContent = "Time Remaining : " + timeLeft; // Reset the timer display
+});
+
+async function fetchQuestions() {
+    const selectedCategory = categorySelect.value;
+    const url = `https://quizapi.io/api/v1/questions?apiKey=${apiToken}&category=${selectedCategory}&limit=5`;
+
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error("Failed to fetch questions.");
+        const data = await response.json();
+
+        if (!data.length) {
+            alert("No questions found. Please try a different category.");
+            return;
+        }
+
+        questions = data.map(item => {
+            let correctAnswerKey = null;
+            for (const key in item.correct_answers) {
+                if (item.correct_answers[key] === 'true') {
+                    correctAnswerKey = key.replace('_correct', '');
+                    break;
+                }
+            }
+
+            return {
+                question: item.question,
+                answers: item.answers,
+                correct_answer: correctAnswerKey,
+            };
+        });
+
+        currentQuestionIndex = 0;
+        score = 0;
+        showQuestion();
+    } catch (error) {
+        console.error("Error fetching questions:", error);
+    }
+}
+
+function showQuestion() {
+    const currentQuestion = questions[currentQuestionIndex];
+    questionText.textContent = currentQuestion.question;
+    optionsContainer.innerHTML = '';
+    timeLeft = 30;  // Reset the timer to 30 seconds
+    startTimer();   // Start the timer for the new question
+
+    currentQuestionIndex++;
+
+    Object.entries(currentQuestion.answers).forEach(([key, value]) => {
+        if (value) {
+            const optionButton = document.createElement('button');
+            optionButton.textContent = value;
+            optionButton.classList.add('option-button');
+            optionButton.dataset.answer = key;
+
+            optionButton.addEventListener('click', () => {
+                const correctAnswer = currentQuestion.correct_answer;
+                if (key === correctAnswer) {
+                    score++;
+                    optionButton.classList.add('correct');
+                } else {
+                    optionButton.classList.add('wrong');
+                    const correctOptionButton = Array.from(optionsContainer.children).find(btn => btn.dataset.answer === correctAnswer);
+                    correctOptionButton.classList.add('correct');
+                }
+
+                // Disable all buttons after an answer is chosen
+                Array.from(optionsContainer.children).forEach(btn => btn.disabled = true);
+
+                // Move to next question after a delay
+                setTimeout(() => {
+                    if (currentQuestionIndex < questions.length) {
+                        showQuestion();
+                    } else {
+                        saveScore(categorySelect.value, score);
+                        showScore();
+                    }
+                }, 1000);
+            });
+
+            optionsContainer.appendChild(optionButton);
+        }
+    });
+
+    questionContainer.style.display = 'block';
+}
+
+function startTimer() {
+    timerDisplay.textContent = timeLeft;
+    clearInterval(timer);
+    timer = setInterval(() => {
+        timeLeft--;
+        timerDisplay.textContent = "Time Remaining : " + timeLeft;
+        if (timeLeft <= 0) {
+            clearInterval(timer);
+            if (currentQuestionIndex < questions.length) {
+                showQuestion();
+            } else {
+                saveScore(categorySelect.value, score);
+                showScore();
+            }
+        }
+    }, 1000);
+}
+
+// function showScore() {
+//     questionContainer.style.display = 'none';
+//     scoreContainer.style.display = 'block';
+//     scoreElement.textContent = score;
+//     timerDisplay.style.display = 'none'; // Hide the timer during the score display
+// }
+
+function showScore() {
+    let message = score >= 3 ? "Congratulations! You passed the assessment." : "Sorry, you didn't pass the assessment.";
+    questionContainer.style.display = 'none';
+    scoreContainer.style.display = 'block';
+    scoreElement.innerHTML = `${score} <br><p style="font-size: medium;">${message}</p>`;
+    timerDisplay.style.display = 'none'; // Hide the timer during the score display
+}
+
+
+// Save the highest score for each skill in Firestore
+async function saveScore(skill, newScore) {
+    const email = sessionStorage.getItem('email');
+    const fullname = sessionStorage.getItem('fullname');
+
+    if (!email) {
+        console.error("User not logged in.");
+        return;
+    }
+
+    const userDocRef = doc(db, "users", email);
+
+    try {
+        const userDoc = await getDoc(userDocRef);
+
+        if (userDoc.exists()) {
+            const userData = userDoc.data();
+            const scores = userData.scores || {}; // Initialize scores map if not present
+
+            if (!scores[skill] || newScore > scores[skill]) {
+                scores[skill] = newScore;
+                console.log(`New high score for ${skill}: ${newScore}`);
+            } else {
+                console.log(`Current score (${newScore}) is not higher than the stored score (${scores[skill]}) for ${skill}.`);
+            }
+
+            await setDoc(userDocRef, { scores }, { merge: true });
+        } else {
+            const newUserData = {
+                fullname,
+                email,
+                scores: { [skill]: newScore }
+            };
+            await setDoc(userDocRef, newUserData);
+        }
+        console.log("Score saved successfully.");
+    } catch (error) {
+        console.error("Error saving score:", error);
+    }
+}
+document.getElementById('ResumeBuilderPage').addEventListener('click', function() {
+    window.location.href = 'resume-builder.html'; // Redirect to test.html
+});
+
+
+    </script>
+</body>
+</html>
